@@ -64,22 +64,19 @@ end
 module TaxCalculator
   extend self
 
-  TAX_RATES = {
-    basic: 0.1,
-    imported: 0.05
-  }.freeze
+  BASIC_RATE = 0.1
+  IMPORT_RATE = 0.05
 
   UNTAXABLE_TYPES = %w( Food Medicine Book )
 
   def calculate(item)
-    return 0 unless taxable?(item)
-    key = item.imported? ? :imported : :basic
-    tax = item.subtotal * TAX_RATES[key]
-    tax.round(2)
+    tax = 0
+    tax += round(item.subtotal * BASIC_RATE) unless UNTAXABLE_TYPES.include?(item.type)
+    tax += round(item.subtotal * IMPORT_RATE) if item.imported?
+    tax
   end
 
-  def taxable?(item)
-    return true if item.imported?
-    !UNTAXABLE_TYPES.include?(item.type)
+  def round(n)
+    (n * 20).round / 20.0
   end
 end
