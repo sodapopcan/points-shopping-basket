@@ -15,7 +15,7 @@
   },
   {
     "id": 3,
-    "description": "Chocalte Bar",
+    "description": "Chocolate Bar",
     "type": "Food",
     "price": 0.85,
     "imported": false
@@ -57,9 +57,9 @@
   },
   {
     "id": 9,
-    "description": "Box of imported chocolates",
+    "description": "Imported Box of imported chocolates",
     "type": "Food",
     "price": 11.25,
-    "imported": false
+    "imported": true
   }
 ]
