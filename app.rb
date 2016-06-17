@@ -13,6 +13,26 @@ end
 class Product < OpenStruct
 end
 
+class Basket
+  attr_reader :line_items
+
+  def initialize
+    @line_items = []
+  end
+
+  def add_product(product)
+    @line_items << LineItem.new(product)
+  end
+
+  def tax_total
+    @line_items.reduce(0) { |tax, item| tax += item.tax }
+  end
+
+  def total
+    @line_items.reduce(0) { |total, item| total += item.total }
+  end
+end
+
 class LineItem
   attr_reader :product, :description, :type, :price, :quantity
 

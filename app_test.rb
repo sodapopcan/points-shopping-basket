@@ -49,3 +49,20 @@ describe TaxCalculator do
     TaxCalculator.calculate(line_item).must_equal 2.8
   end
 end
+
+describe Basket do
+  basket = Basket.new
+  [1, 3, 4].each { |id| basket.add_product Database.find_product(id) }
+
+  it "adds products" do
+    basket.line_items.count.must_equal 3
+  end
+
+  it "calculates the tax total" do
+    basket.tax_total.must_equal 1.0
+  end
+
+  it "calculates the total" do
+    basket.total.must_equal 24.34
+  end
+end
