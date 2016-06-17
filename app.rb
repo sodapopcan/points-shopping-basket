@@ -24,6 +24,18 @@ class LineItem
     @quantity = quantity
   end
 
+  def tax
+    TaxCalculator.calculate(self)
+  end
+
+  def subtotal
+    price * quantity
+  end
+
+  def total
+    subtotal + tax
+  end
+
   def imported?
     @product.imported
   end
@@ -31,6 +43,20 @@ end
 
 module TaxCalculator
   extend self
+
+  TAX_RATES = {
+    basic: 0.05,
+    imported: 0.1
+  }.freeze
+
+  UNTAXABLE_TYPES = %w( Food Medicine Book )
+
+  def calculate(item)
+    return 0 unless taxable?(item)
+    key = item.imported? ? :imported : :basic
+    tax = item.subtotal * TAX_RATES[key]
+    tax.round(2)
+  end
 
   def taxable?(item)
     return true if item.imported?
