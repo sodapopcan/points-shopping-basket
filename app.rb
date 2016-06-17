@@ -65,8 +65,8 @@ module TaxCalculator
   extend self
 
   TAX_RATES = {
-    basic: 0.05,
-    imported: 0.1
+    basic: 0.1,
+    imported: 0.05
   }.freeze
 
   UNTAXABLE_TYPES = %w( Food Medicine Book )
