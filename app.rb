@@ -2,11 +2,10 @@ require 'json'
 require 'bigdecimal'
 
 module Database
-  PRODUCTS = JSON.parse(File.read('./data.json'), symbolize_names: true)
-
   def self.find_product(id)
-    data = PRODUCTS.find { |d| d[:id] == id }
-    Product.new(data)
+    products = JSON.parse(File.read('./data.json'), symbolize_names: true)
+    product = products.find { |d| d[:id] == id }
+    Product.new(product)
   end
 end
 
