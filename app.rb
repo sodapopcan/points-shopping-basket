@@ -73,9 +73,10 @@ module TaxCalculator
   UNTAXABLE_TYPES = %w( Food Medicine Book )
 
   def calculate(item)
+    subtotal = item.subtotal
     tax = BigDecimal.new('0.0')
-    tax += round(item.subtotal * BASIC_RATE) unless UNTAXABLE_TYPES.include?(item.type)
-    tax += round(item.subtotal * IMPORT_RATE) if item.imported?
+    tax += round(subtotal * BASIC_RATE) unless UNTAXABLE_TYPES.include?(item.type)
+    tax += round(subtotal * IMPORT_RATE) if item.imported?
     tax
   end
 
