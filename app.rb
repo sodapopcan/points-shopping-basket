@@ -23,8 +23,8 @@ class Basket
     @line_items = []
   end
 
-  def add_product(product)
-    @line_items << LineItem.new(product)
+  def add_product(product, quantity = 1)
+    @line_items << LineItem.new(product, quantity)
   end
 
   def tax_total

@@ -3,25 +3,51 @@ require 'minitest/autorun'
 require_relative './app'
 require_relative './helpers'
 
+# Fixture data
+taxable_product = {
+  id: 1,
+  description: 'Perfume',
+  type: 'Beauty',
+  price: 12.49,
+  imported: false
+}
+
+untaxable_product = {
+  id: 2,
+  description: 'Book',
+  type: 'Book',
+  price: 8.95,
+  imported: false
+}
+
+imported_product = {
+  id: 3,
+  description: 'Box of chocolates',
+  type: 'Food',
+  price: 24.95,
+  imported: true
+}
+
 describe Database do
   it "can find a product" do
-    product = Database.find_product(1)
-    product.description.must_equal 'Book'
-    product.price.must_equal 12.49
+    product = Product.new(taxable_product)
+    product.description.must_equal 'Perfume'
+    product.type.must_equal 'Beauty'
+    product.price.must_equal BigDecimal.new('12.49')
   end
 end
 
 describe LineItem do
-  product = Database.find_product(4)
+  product = Product.new(imported_product)
   line_item = LineItem.new product, 2
   it "takes a product and quantity" do
     line_item.product.must_equal product
     line_item.quantity.must_equal 2
-    line_item.price.must_equal 10
+    line_item.price.must_equal BigDecimal.new('24.95')
   end
 
   it "calculates the subtotal (no tax)" do
-    line_item.subtotal.must_equal 20.0
+    line_item.subtotal.must_equal BigDecimal.new('49.9')
   end
 
   it "knows if it's imported or not" do
@@ -31,8 +57,8 @@ end
 
 describe TaxCalculator do
   it "can calculated tax of a LineItem" do
-    line_item = LineItem.new Database.find_product(6)
-    TaxCalculator.calculate(line_item).must_equal BigDecimal.new('4.2')
+    line_item = LineItem.new Product.new(taxable_product)
+    TaxCalculator.calculate(line_item).must_equal BigDecimal.new('1.25')
   end
 
   it "rounds to the nearest 0.05" do
@@ -43,6 +69,31 @@ describe TaxCalculator do
 end
 
 describe Basket do
+  it "should add a product with a quantity" do
+    basket = Basket.new
+    basket.add_product(Product.new(taxable_product), 2)
+    basket.line_items.count.must_equal 1
+    basket.line_items.first.quantity.must_equal 2
+  end
+
+  it "can add multiple products" do
+    basket = Basket.new
+    basket.add_product Product.new(taxable_product)
+    basket.add_product Product.new(untaxable_product)
+    basket.add_product Product.new(imported_product)
+    basket.line_items.count.must_equal 3
+  end
+
+  it "calculates the totals" do
+    basket = Basket.new
+    basket.add_product Product.new(taxable_product)
+    basket.add_product Product.new(untaxable_product)
+    basket.add_product Product.new(imported_product)
+    basket.tax_total.must_equal BigDecimal.new('2.5')
+    basket.total.must_equal BigDecimal.new('48.89')
+  end
+
+
   # These run the exercise expectations
   it "has the right totals for the first output" do
     basket = Basket.new
