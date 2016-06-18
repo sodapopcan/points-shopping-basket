@@ -84,3 +84,18 @@ module TaxCalculator
     (BigDecimal.new(n.to_s) * 20).ceil / BigDecimal.new("20.0")
   end
 end
+
+module View
+  LINE_ITEM_TEMPLATE = "%i %s: $%.2f"
+
+  def self.render(basket)
+    output = []
+    basket.line_items.each do |item|
+      output << LINE_ITEM_TEMPLATE % [item.quantity, item.description, item.total]
+    end
+    output << "Sales Tax: $%.2f" % basket.tax_total
+    output << "Total: $%.2f" % basket.total
+
+    output.join("\n")
+  end
+end
