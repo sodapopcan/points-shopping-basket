@@ -1,6 +1,7 @@
 require 'minitest/autorun'
 
 require_relative './app'
+require_relative './helpers'
 
 describe Database do
   it "can find a product" do
@@ -29,40 +30,47 @@ describe LineItem do
 end
 
 describe TaxCalculator do
-  it "knows that an item is taxable" do
-    line_item = LineItem.new Database.find_product(5)
-    TaxCalculator.taxable?(line_item).must_equal true
-  end
-
-  it "knows that an item is untaxable" do
-    line_item = LineItem.new Database.find_product(8)
-    TaxCalculator.taxable?(line_item).must_equal false
-  end
-
-  it "knows that an imported item is always taxable" do
-    line_item = LineItem.new Database.find_product(6)
-    TaxCalculator.taxable?(line_item).must_equal true
-  end
-
   it "can calculated tax of a LineItem" do
     line_item = LineItem.new Database.find_product(6)
-    TaxCalculator.calculate(line_item).must_equal 2.8
+    TaxCalculator.calculate(line_item).must_equal 1.4
+  end
+
+  it "rounds to the nearest 0.05" do
+    TaxCalculator.round(1.421).must_equal BigDecimal.new('1.45')
+    TaxCalculator.round(1.45).must_equal BigDecimal.new('1.45')
+    TaxCalculator.round(1.46).must_equal BigDecimal.new('1.5')
   end
 end
 
 describe Basket do
-  basket = Basket.new
-  [1, 3, 4].each { |id| basket.add_product Database.find_product(id) }
-
-  it "adds products" do
-    basket.line_items.count.must_equal 3
+  # These run the exercise expectations
+  it "has the right totals for the first output" do
+    basket = Basket.new
+    fill_basket(basket, [1,2,3])
+    basket.line_items[0].total.must_equal BigDecimal.new('12.49')
+    basket.line_items[1].total.must_equal BigDecimal.new('16.49')
+    basket.line_items[2].total.must_equal BigDecimal.new('0.85')
+    basket.tax_total.must_equal BigDecimal.new('1.5')
+    basket.total.must_equal BigDecimal.new('29.83')
   end
 
-  it "calculates the tax total" do
-    basket.tax_total.must_equal 1.0
+  it "has the right totals for the second output" do
+    basket = Basket.new
+    fill_basket(basket, [4,5])
+    basket.line_items[0].total.must_equal BigDecimal.new('10.5')
+    basket.line_items[1].total.must_equal BigDecimal.new('54.65')
+    basket.tax_total.must_equal BigDecimal.new('7.65')
+    basket.total.must_equal BigDecimal.new('65.15')
   end
 
-  it "calculates the total" do
-    basket.total.must_equal 24.34
+  it "has the right totals for the third output" do
+    basket = Basket.new
+    fill_basket(basket, [6,7,8,9])
+    basket.line_items[0].total.must_equal BigDecimal.new('32.19')
+    basket.line_items[1].total.must_equal BigDecimal.new('20.89')
+    basket.line_items[2].total.must_equal BigDecimal.new('9.75')
+    basket.line_items[3].total.must_equal BigDecimal.new('11.85')
+    basket.tax_total.must_equal BigDecimal.new('6.70')
+    basket.total.must_equal BigDecimal.new('74.68')
   end
 end

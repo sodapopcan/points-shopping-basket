@@ -1,4 +1,5 @@
 require 'json'
+require 'bigdecimal'
 
 module Database
   PRODUCTS = JSON.parse(File.read('./data.json'), symbolize_names: true)
@@ -11,6 +12,9 @@ end
 
 # OpenStruct allows accessing hash keys as methods
 class Product < OpenStruct
+  def price
+    BigDecimal.new(super.to_s)
+  end
 end
 
 class Basket
@@ -70,13 +74,13 @@ module TaxCalculator
   UNTAXABLE_TYPES = %w( Food Medicine Book )
 
   def calculate(item)
-    tax = 0
+    tax = BigDecimal.new('0.0')
     tax += round(item.subtotal * BASIC_RATE) unless UNTAXABLE_TYPES.include?(item.type)
     tax += round(item.subtotal * IMPORT_RATE) if item.imported?
     tax
   end
 
   def round(n)
-    (n * 20).round / 20.0
+    (BigDecimal.new(n.to_s) * 20).ceil / BigDecimal.new("20.0")
   end
 end
