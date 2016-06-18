@@ -80,6 +80,8 @@ module TaxCalculator
     tax
   end
 
+  private
+
   def round(n)
     (BigDecimal.new(n.to_s) * 20).ceil / BigDecimal.new("20.0")
   end

@@ -36,9 +36,9 @@ describe TaxCalculator do
   end
 
   it "rounds to the nearest 0.05" do
-    TaxCalculator.round(1.421).must_equal BigDecimal.new('1.45')
-    TaxCalculator.round(1.45).must_equal BigDecimal.new('1.45')
-    TaxCalculator.round(1.46).must_equal BigDecimal.new('1.5')
+    TaxCalculator.send(:round, 1.421).must_equal BigDecimal.new('1.45')
+    TaxCalculator.send(:round, 1.45).must_equal BigDecimal.new('1.45')
+    TaxCalculator.send(:round, 1.46).must_equal BigDecimal.new('1.5')
   end
 end
 
