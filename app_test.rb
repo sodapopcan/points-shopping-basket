@@ -32,7 +32,7 @@ end
 describe TaxCalculator do
   it "can calculated tax of a LineItem" do
     line_item = LineItem.new Database.find_product(6)
-    TaxCalculator.calculate(line_item).must_equal 1.4
+    TaxCalculator.calculate(line_item).must_equal BigDecimal.new('4.2')
   end
 
   it "rounds to the nearest 0.05" do
